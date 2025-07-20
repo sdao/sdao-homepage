@@ -30,7 +30,7 @@ fn orderedDither(uv: vec2f, lum: f32,) -> f32 {
 fn main(
   @location(0) fragUV: vec2f,
   @location(1) fragPosition: vec4f,
-  @builtin(position) foo: vec4f
+  @builtin(position) screenPos: vec4f
 ) -> @location(0) vec4f {
-  return vec4f(0.0, 0.0, 0.0, orderedDither(vec2f(foo.x, foo.y), fragUV.x));
+  return vec4f(0.0, 0.0, 0.0, orderedDither(vec2f(screenPos.x, screenPos.y), fragUV.x));
 }
