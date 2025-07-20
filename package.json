@@ -13,7 +13,8 @@
 	},
 	"dependencies": {
 		"react": "^19.1.0",
-		"react-dom": "^19.1.0"
+		"react-dom": "^19.1.0",
+		"wgpu-matrix": "^3.4.0"
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.9.6",
@@ -21,6 +22,7 @@
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
 		"@vitejs/plugin-react": "^4.6.0",
+		"@webgpu/types": "^0.1.64",
 		"eslint": "^9.30.1",
 		"eslint-plugin-react-hooks": "^5.2.0",
 		"eslint-plugin-react-refresh": "^0.4.20",

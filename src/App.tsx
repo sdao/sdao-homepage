@@ -1,57 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import cloudflareLogo from './assets/Cloudflare_Logo.svg'
+import { useEffect, useRef } from 'react'
 import './App.css'
+import './graphics.ts'
+import { start } from './graphics.ts'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [name, setName] = useState('unknown')
+  const inputRef = useRef<HTMLCanvasElement | null>(null); // Initialize with null
+
+  useEffect(() => {
+    if (inputRef.current)
+    {
+      start(inputRef.current);
+    }
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href='https://vite.dev' target='_blank'>
-          <img src={viteLogo} className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://react.dev' target='_blank'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
-        <a href='https://workers.cloudflare.com/' target='_blank'>
-          <img src={cloudflareLogo} className='logo cloudflare' alt='Cloudflare logo' />
-        </a>
-      </div>
-      <h1>Vite + React + Cloudflare</h1>
-      <div className='card'>
-        <button
-          onClick={() => setCount((count) => count + 1)}
-          aria-label='increment'
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <div className='card'>
-        <button
-          onClick={() => {
-            fetch('/api/')
-              .then((res) => res.json() as Promise<{ name: string }>)
-              .then((data) => setName(data.name))
-          }}
-          aria-label='get name'
-        >
-          Name from API is: {name}
-        </button>
-        <p>
-          Edit <code>worker/index.ts</code> to change the name
-        </p>
-      </div>
-      <p className='read-the-docs'>
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main>
+        <div className="infobox">
+            <section>
+                <h1>Steven Dao</h1>
+                <p>Austin, Texas</p>
+                <p>832.582.0950</p>
+                <p>steven@stevendao.org</p>
+            </section>
+            <section>
+                <p><strong>The University of Texas at Austin</strong> '15</p>
+                <p><strong>Google</strong> 2015-2016</p>
+                <p><strong>Pixar</strong> 2016-2021</p>
+                <p><strong>Retro Studios</strong> 2021-Present</p>
+            </section>
+        </div>
+        <canvas ref={inputRef} className="background"></canvas>
+    </main>
   )
 }
 
