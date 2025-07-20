@@ -87,4 +87,5 @@ strong {
 
 .webgpu-notice-unavailable {
 	display: block;
+	opacity: 80%;
 }
