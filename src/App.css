@@ -80,3 +80,11 @@ strong {
 .background {
   z-index: -2;
 }
+
+.webgpu-notice {
+	display: none;
+}
+
+.webgpu-notice-unavailable {
+	display: block;
+}

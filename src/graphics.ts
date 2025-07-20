@@ -224,9 +224,12 @@ function frame(canvas: HTMLCanvasElement, renderData: RenderData, timestamp: DOM
   requestAnimationFrame((timestamp) => frame(canvas, renderData, timestamp));
 }
 
-export async function start(element: HTMLCanvasElement) {
+export async function startGraphics(element: HTMLCanvasElement, notice: HTMLElement) {
   const renderData = await setup(element);
   if (renderData) {
     requestAnimationFrame((timestamp) => frame(element, renderData, timestamp));
+  }
+  else {
+    notice.classList.add("webgpu-notice-unavailable");
   }
 }
