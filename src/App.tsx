@@ -21,7 +21,7 @@ function App() {
                 <h1>Steven Dao</h1>
                 <p>Austin, Texas</p>
                 <p>832.582.0950</p>
-                <p>steven@stevendao.org</p>
+                <p>steven@stevendao.net</p>
             </section>
             <section>
                 <p><strong>The University of Texas at Austin</strong> '15</p>
