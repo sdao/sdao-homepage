@@ -22,6 +22,17 @@ type RenderData = {
   verticesBuffer: GPUBuffer,
 };
 
+function resizeCanvas(canvas: HTMLCanvasElement) {
+  const body = canvas.ownerDocument.querySelector("body");
+  if (body) {
+    const devicePixelRatio = window.devicePixelRatio;
+    canvas.width = body.clientWidth * devicePixelRatio;
+    canvas.height = body.clientHeight * devicePixelRatio;
+    canvas.style.width = `${body.clientWidth}px`;
+    canvas.style.height = `${body.clientHeight}px`;
+  }
+}
+
 async function setup(canvas: HTMLCanvasElement): Promise<RenderData | undefined> {
   const adapter = await navigator.gpu?.requestAdapter({
     featureLevel: 'compatibility',
@@ -32,13 +43,9 @@ async function setup(canvas: HTMLCanvasElement): Promise<RenderData | undefined>
     return;
   }
 
-  const context = canvas.getContext('webgpu') as GPUCanvasContext;
+  resizeCanvas(canvas);
 
-  const devicePixelRatio = window.devicePixelRatio;
-  canvas.width = window.innerWidth * devicePixelRatio;
-  canvas.height = window.innerHeight * devicePixelRatio;
-  canvas.style.width = `${window.innerWidth}px`;
-  canvas.style.height = `${window.innerHeight}px`;
+  const context = canvas.getContext('webgpu') as GPUCanvasContext;
   const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
 
   context.configure({
@@ -135,9 +142,8 @@ async function setup(canvas: HTMLCanvasElement): Promise<RenderData | undefined>
     colorAttachments: [
       {
         view: context
-    .getCurrentTexture()
-    .createView(),
-
+          .getCurrentTexture()
+          .createView(),
         clearValue: [0.0, 0.0, 0.0, 0.0],
         loadOp: 'clear',
         storeOp: 'store',
@@ -177,11 +183,16 @@ function getTransformationMatrix(renderData: RenderData) {
 }
 
 function frame(canvas: HTMLCanvasElement, renderData: RenderData, timestamp: DOMHighResTimeStamp) {
-  const devicePixelRatio = window.devicePixelRatio;
-  canvas.width = window.innerWidth * devicePixelRatio;
-  canvas.height = window.innerHeight * devicePixelRatio;
-  canvas.style.width = `${window.innerWidth}px`;
-  canvas.style.height = `${window.innerHeight}px`;
+  resizeCanvas(canvas);
+
+  const context = canvas.getContext('webgpu') as GPUCanvasContext;
+  const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+
+  context.configure({
+    device: renderData.device,
+    format: presentationFormat,
+    alphaMode: 'premultiplied',
+  });
 
   const aspect = canvas.width / canvas.height;
   renderData.projectionMatrix = mat4.perspective((2 * Math.PI) / 5, aspect, 1, 100.0);
