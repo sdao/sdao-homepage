@@ -12,7 +12,7 @@ const bayerMatrix4x4: mat4x4f = mat4x4(
     15.0, 7.0,  13.0, 5.0
 ) * (1.0/16.0);
 
-const bias = 0.1;
+const bias = 0;
 
 fn orderedDither(uv: vec2f, lum: f32,) -> f32 {
   let x = i32(uv.x / uniforms.pixel_ratio) % 4;

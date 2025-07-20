@@ -37,8 +37,10 @@ async function setup(canvas: HTMLCanvasElement)
   const context = canvas.getContext('webgpu') as GPUCanvasContext;
 
   const devicePixelRatio = window.devicePixelRatio;
-  canvas.width = canvas.clientWidth * devicePixelRatio;
-  canvas.height = canvas.clientHeight * devicePixelRatio;
+  canvas.width = window.innerWidth * devicePixelRatio;
+  canvas.height = window.innerHeight * devicePixelRatio;
+  canvas.style.width = `${window.innerWidth}px`;
+  canvas.style.height = `${window.innerHeight}px`;
   const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
 
   context.configure({
@@ -111,20 +113,6 @@ async function setup(canvas: HTMLCanvasElement)
       // pointing toward the camera.
       cullMode: 'back',
     },
-
-    // Enable depth testing so that the fragment closest to the camera
-    // is rendered in front.
-    depthStencil: {
-      depthWriteEnabled: false, // XXX
-      depthCompare: 'less',
-      format: 'depth24plus',
-    },
-  });
-
-  const depthTexture = device.createTexture({
-    size: [canvas.width, canvas.height],
-    format: 'depth24plus',
-    usage: GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
   const uniformBufferSize = 4 * 16 + 16; // 4x4 matrix + 3 floats and padding
@@ -157,13 +145,6 @@ async function setup(canvas: HTMLCanvasElement)
         storeOp: 'store',
       },
     ],
-    depthStencilAttachment: {
-      view: depthTexture.createView(),
-
-      depthClearValue: 1.0,
-      depthLoadOp: 'clear',
-      depthStoreOp: 'store',
-    },
   };
 
   const aspect = canvas.width / canvas.height;
@@ -173,8 +154,8 @@ async function setup(canvas: HTMLCanvasElement)
 
 function getTransformationMatrix() {
   const viewMatrix = mat4.identity();
-  mat4.translate(viewMatrix, vec3.fromValues(0, 0, -6), viewMatrix);
-  const now = Date.now() / 1000;
+  mat4.translate(viewMatrix, vec3.fromValues(0, 0, -5), viewMatrix);
+  const now = Date.now() / 2000;
   mat4.rotate(
     viewMatrix,
     vec3.fromValues(Math.sin(now), Math.cos(now), 0),
@@ -192,6 +173,14 @@ function frame(canvas: HTMLCanvasElement, timestamp: DOMHighResTimeStamp) {
   {
     return;
   }
+  const devicePixelRatio = window.devicePixelRatio;
+  canvas.width = window.innerWidth * devicePixelRatio;
+  canvas.height = window.innerHeight * devicePixelRatio;
+  canvas.style.width = `${window.innerWidth}px`;
+  canvas.style.height = `${window.innerHeight}px`;
+
+  const aspect = canvas.width / canvas.height;
+  projectionMatrix = mat4.perspective((2 * Math.PI) / 5, aspect, 1, 100.0);
 
   const transformationMatrix = getTransformationMatrix();
   device.queue.writeBuffer(
