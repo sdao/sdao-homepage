@@ -12,6 +12,7 @@ import basicVertWGSL from './assets/basic.vert.wgsl?raw';
 import vertexPositionColorWGSL from './assets/basic.frag.wgsl?raw';
 
 type RenderData = {
+  context: GPUCanvasContext,
   device: GPUDevice,
   uniformBindGroup: GPUBindGroup,
   renderPassDescriptor: GPURenderPassDescriptor,
@@ -155,6 +156,7 @@ async function setup(canvas: HTMLCanvasElement): Promise<RenderData | undefined>
   const projectionMatrix = mat4.perspective((2 * Math.PI) / 5, aspect, 1, 100.0);
   
   return {
+    context,
     device,
     uniformBindGroup,
     renderPassDescriptor,
@@ -184,15 +186,6 @@ function getTransformationMatrix(renderData: RenderData) {
 
 function frame(canvas: HTMLCanvasElement, renderData: RenderData, timestamp: DOMHighResTimeStamp) {
   resizeCanvas(canvas);
-
-  const context = canvas.getContext('webgpu') as GPUCanvasContext;
-  const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
-
-  context.configure({
-    device: renderData.device,
-    format: presentationFormat,
-    alphaMode: 'premultiplied',
-  });
 
   const aspect = canvas.width / canvas.height;
   renderData.projectionMatrix = mat4.perspective((2 * Math.PI) / 5, aspect, 1, 100.0);
@@ -236,6 +229,12 @@ function frame(canvas: HTMLCanvasElement, renderData: RenderData, timestamp: DOM
 }
 
 export async function startGraphics(element: HTMLCanvasElement, notice: HTMLElement) {
+  if (element.classList.contains("graphics-started")) {
+    return;
+  }
+
+  element.classList.add("graphics-started");
+
   const renderData = await setup(element);
   if (renderData) {
     requestAnimationFrame((timestamp) => frame(element, renderData, timestamp));
