@@ -18,7 +18,7 @@ fn main(
 ) -> VertexOutput {
   var output : VertexOutput;
   output.Position = uniforms.modelViewProjectionMatrix * position;
-  output.fragUV = vec2f(modf(uv.x + uniforms.time / 20000.0).fract, uv.y);
+  output.fragUV = vec2f(uv.x + uniforms.time / 20000.0, uv.y);
   output.fragPosition = 0.5 * (position + vec4(1.0, 1.0, 1.0, 1.0));
   return output;
 }

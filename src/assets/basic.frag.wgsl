@@ -14,7 +14,7 @@ const bayerMatrix4x4: mat4x4f = mat4x4(
 
 const bias = 0;
 
-fn orderedDither(uv: vec2f, lum: f32,) -> f32 {
+fn orderedDither(uv: vec2f, lum: f32) -> f32 {
   let x = i32(uv.x / uniforms.pixel_ratio) % 4;
   let y = i32(uv.y / uniforms.pixel_ratio) % 4;
   let threshold = bayerMatrix4x4[y][x];
@@ -26,11 +26,29 @@ fn orderedDither(uv: vec2f, lum: f32,) -> f32 {
   }
 }
 
+fn easeinout(x: f32) -> f32 {
+  let frac = modf(x).fract;
+  if (frac < 0.05) {
+    // [0,0.05] -> [0,1]
+    return frac / 0.05;
+  }
+  else if (frac < 0.1) {
+    return 1.0;
+  }
+  else if (frac < 0.9) {
+    // [0.1,0.9] -> [1,0]
+    return 1.0 - ((frac - 0.1) / (0.9 - 0.1));
+  }
+  else {
+    return 0.0;
+  }
+}
+
 @fragment
 fn main(
   @location(0) fragUV: vec2f,
   @location(1) fragPosition: vec4f,
   @builtin(position) screenPos: vec4f
 ) -> @location(0) vec4f {
-  return vec4f(0.0, 0.0, 0.0, orderedDither(vec2f(screenPos.x, screenPos.y), fragUV.x));
+  return vec4f(0.0, 0.0, 0.0, orderedDither(vec2f(screenPos.x, screenPos.y), easeinout(fragUV.x)));
 }
