@@ -3,9 +3,10 @@ import { mat4, vec3, type Mat4 } from 'wgpu-matrix';
 import {
   squiggleVertexArray,
   squiggleVertexSize,
+  squiggleIndexArray,
   squiggleUVOffset,
   squigglePositionOffset,
-  squiggleVertexCount,
+  squiggleIndexCount,
 } from './geometry';
 
 import basicVertWGSL from './assets/basic.vert.wgsl?raw';
@@ -21,6 +22,7 @@ type RenderData = {
   uniformBuffer: GPUBuffer,
   pipeline: GPURenderPipeline,
   verticesBuffer: GPUBuffer,
+  indexBuffer: GPUBuffer,
 };
 
 function resizeCanvas(canvas: HTMLCanvasElement) {
@@ -63,6 +65,14 @@ async function setup(canvas: HTMLCanvasElement): Promise<RenderData | undefined>
   });
   new Float32Array(verticesBuffer.getMappedRange()).set(squiggleVertexArray);
   verticesBuffer.unmap();
+
+  const indexBuffer = device.createBuffer({
+    size: squiggleIndexArray.byteLength,
+    usage: GPUBufferUsage.INDEX,
+    mappedAtCreation: true,
+  });
+  new Uint32Array(indexBuffer.getMappedRange()).set(squiggleIndexArray);
+  indexBuffer.unmap();
 
   const pipeline = device.createRenderPipeline({
     layout: 'auto',
@@ -165,6 +175,7 @@ async function setup(canvas: HTMLCanvasElement): Promise<RenderData | undefined>
     uniformBuffer,
     pipeline,
     verticesBuffer,
+    indexBuffer,
   };
 }
 
@@ -221,7 +232,8 @@ function frame(canvas: HTMLCanvasElement, renderData: RenderData, timestamp: DOM
   passEncoder.setPipeline(renderData.pipeline);
   passEncoder.setBindGroup(0, renderData.uniformBindGroup);
   passEncoder.setVertexBuffer(0, renderData.verticesBuffer);
-  passEncoder.draw(squiggleVertexCount);
+  passEncoder.setIndexBuffer(renderData.indexBuffer, "uint32");
+  passEncoder.drawIndexed(squiggleIndexCount);
   passEncoder.end();
   renderData.device.queue.submit([commandEncoder.finish()]);
 
